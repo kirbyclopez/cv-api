@@ -35,8 +35,20 @@ export const createUserSessionHandler = async (req: Request, res: Response) => {
     { expiresIn: process.env.REFRESHTOKENTTL }
   );
 
-  res.cookie("accessToken", accessToken, { httpOnly: true });
-  res.cookie("refreshToken", refreshToken, { httpOnly: true });
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24 * 30,
+    path: "/",
+  });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24 * 30,
+    path: "/",
+  });
 
   return res.send({ accessToken, refreshToken });
 };
